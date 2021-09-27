@@ -29,6 +29,7 @@ import (
 )
 
 const (
+	headerFilePath = "../../boilerplate/boilerplate.go.txt"
 	testdataDir = "./testdata"
 	testPkgDir  = "k8s.io/kube-openapi/test/integration/testdata"
 	inputDir    = testPkgDir + "/listtype" +
@@ -78,9 +79,9 @@ var _ = Describe("Open API Definitions Generation", func() {
 
 		// Build the OpenAPI code generator.
 		By("building openapi-gen")
-		binary_path, berr := gexec.Build("../../cmd/openapi-gen/openapi-gen.go")
+		binaryPath, berr := gexec.Build("../../cmd/openapi-gen/openapi-gen.go")
 		Expect(berr).ShouldNot(HaveOccurred())
-		openAPIGenPath = binary_path
+		openAPIGenPath = binaryPath
 
 		// Run the OpenAPI code generator, creating OpenAPIDefinition code
 		// to be compiled into builder.
@@ -92,6 +93,7 @@ var _ = Describe("Open API Definitions Generation", func() {
 			"-p", outputPackage,
 			"-O", outputBaseFileName,
 			"-r", gr,
+			"-h", headerFilePath,
 		)
 		command.Dir = workingDirectory
 		session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
@@ -100,13 +102,13 @@ var _ = Describe("Open API Definitions Generation", func() {
 
 		By("writing swagger")
 		// Create the OpenAPI swagger builder.
-		binary_path, berr = gexec.Build("./builder/main.go")
+		binaryPath, berr = gexec.Build("./builder/main.go")
 		Expect(berr).ShouldNot(HaveOccurred())
 
 		// Execute the builder, generating an OpenAPI swagger file with definitions.
 		gs := generatedFile(generatedSwaggerFileName)
 		By("writing swagger to " + gs)
-		command = exec.Command(binary_path, gs)
+		command = exec.Command(binaryPath, gs)
 		command.Dir = workingDirectory
 		session, err = gexec.Start(command, GinkgoWriter, GinkgoWriter)
 		Expect(err).ShouldNot(HaveOccurred())
@@ -126,6 +128,7 @@ var _ = Describe("Open API Definitions Generation", func() {
 				"-p", outputPackage,
 				"-O", outputBaseFileName,
 				"-r", testdataFile(goldenReportFileName),
+				"-h", headerFilePath,
 				"--verify-only",
 			)
 			command.Dir = workingDirectory
