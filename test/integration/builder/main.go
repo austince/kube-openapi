@@ -27,6 +27,7 @@ import (
 	"github.com/emicklei/go-restful"
 	builderv2 "k8s.io/kube-openapi/pkg/builder"
 	"k8s.io/kube-openapi/pkg/common"
+	"k8s.io/kube-openapi/pkg/common/restfuladapter"
 	"k8s.io/kube-openapi/pkg/util"
 	"k8s.io/kube-openapi/pkg/validation/spec"
 	"k8s.io/kube-openapi/test/integration/pkg/generated"
@@ -57,7 +58,8 @@ func main() {
 	config := createOpenAPIBuilderConfig()
 	config.GetDefinitions = generated.GetOpenAPIDefinitions
 	// Build the Paths using a simple WebService for the final spec
-	swagger, serr := builderv2.BuildOpenAPISpec(createWebServices(), config)
+	containers := restfuladapter.AdaptWebServices(createWebServices())
+	swagger, serr := builderv2.BuildOpenAPISpec(containers, config)
 	if serr != nil {
 		log.Fatalf("ERROR: %s", serr.Error())
 	}

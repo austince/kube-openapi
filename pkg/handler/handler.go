@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/emicklei/go-restful"
 	"github.com/golang/protobuf/proto"
 	openapi_v2 "github.com/googleapis/gnostic/openapiv2"
 	jsoniter "github.com/json-iterator/go"
@@ -248,8 +247,8 @@ func (o *OpenAPIService) RegisterOpenAPIVersionedService(servePath string, handl
 
 // BuildAndRegisterOpenAPIVersionedService builds the spec and registers a handler to provide access to it.
 // Use this method if your OpenAPI spec is static. If you want to update the spec, use BuildOpenAPISpec then RegisterOpenAPIVersionedService.
-func BuildAndRegisterOpenAPIVersionedService(servePath string, webServices []*restful.WebService, config *common.Config, handler common.PathHandler) (*OpenAPIService, error) {
-	spec, err := builder.BuildOpenAPISpec(webServices, config)
+func BuildAndRegisterOpenAPIVersionedService(servePath string, routeContainers []common.RouteContainer, config *common.Config, handler common.PathHandler) (*OpenAPIService, error) {
+	spec, err := builder.BuildOpenAPISpec(routeContainers, config)
 	if err != nil {
 		return nil, err
 	}

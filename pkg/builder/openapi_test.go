@@ -26,6 +26,7 @@ import (
 	"github.com/emicklei/go-restful"
 	"github.com/stretchr/testify/assert"
 	openapi "k8s.io/kube-openapi/pkg/common"
+	"k8s.io/kube-openapi/pkg/common/restfuladapter"
 	"k8s.io/kube-openapi/pkg/validation/spec"
 )
 
@@ -471,7 +472,8 @@ func TestBuildOpenAPISpec(t *testing.T) {
 			},
 		},
 	}
-	swagger, err := BuildOpenAPISpec(container.RegisteredWebServices(), config)
+	routeContainers := restfuladapter.AdaptWebServices(container.RegisteredWebServices())
+	swagger, err := BuildOpenAPISpec(routeContainers, config)
 	if !assert.NoError(err) {
 		return
 	}
