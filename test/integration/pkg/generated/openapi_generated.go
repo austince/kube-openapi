@@ -281,7 +281,8 @@ func schema_test_integration_testdata_enumtype_FruitsBasket(ref common.Reference
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "FruitsBasket is the type that contains the enum type.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"content": {
 						SchemaProps: spec.SchemaProps{
