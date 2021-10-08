@@ -19,6 +19,8 @@ package builder
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/emicklei/go-restful"
+	"k8s.io/kube-openapi/pkg/common/restfuladapter"
 	"net/http"
 	"strings"
 
@@ -39,7 +41,16 @@ type openAPI struct {
 }
 
 // BuildOpenAPISpec builds OpenAPI spec given a list of route containers and common.Config to customize it.
-func BuildOpenAPISpec(routeContainers []common.RouteContainer, config *common.Config) (*spec.Swagger, error) {
+func BuildOpenAPISpec(routeContainersI interface{}, config *common.Config) (*spec.Swagger, error) {
+	var routeContainers []common.RouteContainer
+	if webServices, ok := routeContainersI.([]*restful.WebService); ok {
+		routeContainers = restfuladapter.AdaptWebServices(webServices)
+	} else if rcs, ok := routeContainersI.([]common.RouteContainer); ok {
+		routeContainers = rcs
+	} else {
+		panic("must either be a []*restful.WebService or []common.RouteContainer")
+	}
+
 	o := newOpenAPI(config)
 	err := o.buildPaths(routeContainers)
 	if err != nil {
